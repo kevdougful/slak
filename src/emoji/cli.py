@@ -18,3 +18,11 @@ def migrate(source_team, source_name, target_team, target_name=None):
         print(f"'{source_name}' migrated to {target_team}")
     else:
         print(res)
+
+
+@click.command()
+@click.argument("team")
+@click.argument("name")
+def uri(team, name):
+    uri = emoji.api.get_emoji_uri(team=team, emoji_name=name)
+    print(uri)
