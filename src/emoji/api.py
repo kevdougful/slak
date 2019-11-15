@@ -5,6 +5,8 @@ import requests
 
 
 def _get_token(team):
+    # TODO: Use click's context passing to move this out of the business logic
+    #       and into the CLI layer.
     load_dotenv(dotenv_path=Path.home().joinpath(".slak/.env"))
     token = os.getenv(team.upper() + "_TOKEN")
     if token is None:
@@ -42,9 +44,7 @@ def _add_emoji(team, emoji_name, image):
     return requests.Session().send(req)
 
 
-def migrate_emoji(source_team, source_name, target_team, target_name=None):
-    if target_name is None:
-        target_name = source_name
+def migrate_emoji(source_team, source_name, target_team, target_name):
     image = _download_emoji(source_team, source_name)
     res = _add_emoji(target_team, target_name, image).json()
     return res

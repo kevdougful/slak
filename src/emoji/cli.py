@@ -1,21 +1,30 @@
 import click
 import emoji.api
+from pathlib import Path
+import toml
 
 
 @click.command()
-@click.option("--source-team", required=True)
-@click.option("--source-name", required=True)
-@click.option("--target-team", required=True)
+@click.option("--source-team", required=False)
+@click.option("--target-team", required=False)
 @click.option("--target-name", required=False)
-def migrate(source_team, source_name, target_team, target_name=None):
+@click.argument("name", required=True)
+def migrate(source_team, name, target_team, target_name):
+    config = toml.load(Path.home().joinpath(".slak/config.toml"))
+    if source_team is None:
+        source_team = config.get("defaults").get("source_team")
+    if target_team is None:
+        target_team = config.get("defaults").get("target_team")
+    if target_name is None:
+        target_name = name
     res = emoji.api.migrate_emoji(
         source_team=source_team,
-        source_name=source_name,
+        source_name=name,
         target_team=target_team,
         target_name=target_name
     )
     if res.get('ok'):
-        print(f"'{source_name}' migrated to {target_team}")
+        print(f"'{target_name}' migrated to {target_team}")
     else:
         print(res)
 
